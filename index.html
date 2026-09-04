@@ -3,636 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delvira Nail Art Studio - Kasir & Keuangan Super Lengkap</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Delvira Nails Manager</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icon CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- html2canvas untuk download struk jadi gambar -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 flex h-screen overflow-hidden">
+<body class="bg-gray-100 text-gray-800 font-sans">
 
-    <!-- SIDEBAR NAVIGASI -->
-    <aside class="w-64 bg-pink-900 text-white flex flex-col justify-between hidden md:flex shrink-0">
-        <div>
-            <div class="p-6 text-center border-b border-pink-800">
-                <h1 class="text-xl font-bold tracking-wider">DELVIRA NAILS</h1>
-                <p class="text-xs text-pink-300 mt-1">Nail Art Studio & Beauty</p>
-            </div>
-            <nav class="mt-4 px-3 space-y-1 text-xs">
-                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center px-4 py-3 font-medium rounded-lg bg-pink-800 text-white transition">
-                    <i class="fa-solid fa-chart-line w-6"></i> Dashboard
-                </button>
-                <button onclick="switchTab('pos')" id="nav-pos" class="w-full flex items-center px-4 py-3 font-medium rounded-lg text-pink-200 hover:bg-pink-800 transition">
-                    <i class="fa-solid fa-cash-register w-6"></i> Kasir & Pembayaran
-                </button>
-                <button onclick="switchTab('pricelist')" id="nav-pricelist" class="w-full flex items-center px-4 py-3 font-medium rounded-lg text-pink-200 hover:bg-pink-800 transition">
-                    <i class="fa-solid fa-list-check w-6"></i> Daftar Harga
-                </button>
-                <button onclick="switchTab('reservation')" id="nav-reservation" class="w-full flex items-center px-4 py-3 font-medium rounded-lg text-pink-200 hover:bg-pink-800 transition">
-                    <i class="fa-solid fa-calendar-days w-6"></i> Reservasi & DP
-                </button>
-                <button onclick="switchTab('inventory')" id="nav-inventory" class="w-full flex items-center px-4 py-3 font-medium rounded-lg text-pink-200 hover:bg-pink-800 transition">
-                    <i class="fa-solid fa-boxes-stacked w-6"></i> Stok Alat & Bahan
-                </button>
-                <button onclick="switchTab('expenses')" id="nav-expenses" class="w-full flex items-center px-4 py-3 font-medium rounded-lg text-pink-200 hover:bg-pink-800 transition">
-                    <i class="fa-solid fa-receipt w-6"></i> Pengeluaran & Nota
-                </button>
-                <button onclick="switchTab('customers')" id="nav-customers" class="w-full flex items-center px-4 py-3 font-medium rounded-lg text-pink-200 hover:bg-pink-800 transition">
-                    <i class="fa-solid fa-users w-6"></i> Data Pelanggan
-                </button>
-                <button onclick="switchTab('reports')" id="nav-reports" class="w-full flex items-center px-4 py-3 font-medium rounded-lg text-pink-200 hover:bg-pink-800 transition">
-                    <i class="fa-solid fa-file-invoice-dollar w-6"></i> Laporan Keuangan
-                </button>
-            </nav>
-        </div>
-        <div class="p-4 border-t border-pink-800 text-xs text-pink-300 text-center">
-            <p>Bangsal, Mojokerto</p>
-            <p class="mt-1">WA: 0821-3959-0498</p>
-        </div>
-    </aside>
+    <!-- Header / Navbar -->
+    <nav class="bg-pink-600 text-white p-4 shadow-md flex justify-between items-center">
+        <h1 class="text-xl font-bold"><i class="fas font-sparkles mr-2"></i>Delvira Nails Manager</h1>
+        <span class="text-sm bg-pink-700 px-3 py-1 rounded-full">Kelola Price List</span>
+    </nav>
 
-    <!-- AREA KONTEN UTAMA -->
-    <main class="flex-1 flex flex-col overflow-y-auto">
-        <!-- HEADER MOBILE -->
-        <header class="bg-white shadow-sm border-b px-6 py-4 flex justify-between items-center md:hidden">
-            <h1 class="text-lg font-bold text-pink-900">Delvira Nails App</h1>
-            <span class="text-xs bg-pink-100 text-pink-800 px-2.5 py-1 rounded-full font-semibold">Pro System</span>
-        </header>
-
-        <div class="p-6 max-w-7xl mx-auto w-full space-y-6">
-
-            <!-- DASHBOARD -->
-            <section id="page-dashboard" class="space-y-6">
+    <div class="max-w-4xl mx-auto p-4 md:p-6">
+        
+        <!-- Form Tambah / Edit Layanan -->
+        <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+            <h2 id="form-title" class="text-lg font-bold text-pink-600 mb-4 flex items-center gap-2">
+                <i class="fas fa-plus-circle"></i> Tambah Layanan Baru
+            </h2>
+            <form id="price-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <input type="hidden" id="service-index" value="-1">
+                
                 <div>
-                    <h2 class="text-2xl font-bold text-slate-800">Selamat Datang di Delvira Studio</h2>
-                    <p class="text-sm text-slate-500">Ringkasan Operasional & Keuangan Usaha</p>
+                    <label class="block text-sm font-semibold mb-1">Nama Layanan / Treatment</label>
+                    <input type="text" id="service-name" placeholder="Contoh: Gel Polish Hand" required 
+                        class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-pink-500 focus:outline-none">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Harga (Rp)</label>
+                    <input type="number" id="service-price" placeholder="Contoh: 50000" required 
+                        class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-pink-500 focus:outline-none">
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                        <div class="text-xs font-bold text-slate-400 uppercase">Pendapatan Hari Ini</div>
-                        <div class="text-2xl font-black text-pink-600 mt-2" id="dash-income-today">Rp 0</div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                        <div class="text-xs font-bold text-slate-400 uppercase">Total Pengeluaran</div>
-                        <div class="text-2xl font-black text-red-500 mt-2" id="dash-expenses">Rp 0</div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                        <div class="text-xs font-bold text-slate-400 uppercase">Reservasi Mendatang</div>
-                        <div class="text-2xl font-black text-blue-600 mt-2" id="dash-res-count">0</div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                        <div class="text-xs font-bold text-slate-400 uppercase">Peringatan Stok Menipis</div>
-                        <div class="text-2xl font-black text-amber-500 mt-2" id="dash-stock-alert">0 Item</div>
-                    </div>
+                <div class="flex items-end gap-2">
+                    <button type="submit" id="btn-submit" 
+                        class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-2.5 px-4 rounded-lg transition duration-200 shadow">
+                        <i class="fas fa-save mr-1"></i> Simpan
+                    </button>
+                    <button type="button" id="btn-cancel" onclick="resetForm()" 
+                        class="hidden w-full bg-gray-400 hover:bg-gray-500 text-white font-bold py-2.5 px-4 rounded-lg transition duration-200">
+                        Batal
+                    </button>
                 </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="text-sm font-bold text-slate-700 mb-4"><i class="fa-solid fa-chart-line text-pink-600 mr-2"></i> Grafik Pendapatan</h3>
-                        <canvas id="chartIncome" height="200"></canvas>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="text-sm font-bold text-slate-700 mb-4"><i class="fa-solid fa-chart-pie text-pink-600 mr-2"></i> Perbandingan Layanan</h3>
-                        <canvas id="chartServices" height="200"></canvas>
-                    </div>
-                </div>
-            </section>
-
-            <!-- KASIR & PEMBAYARAN -->
-            <section id="page-pos" class="space-y-6 hidden">
-                <h2 class="text-2xl font-bold text-slate-800">Kasir & Pembayaran Cepat</h2>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    
-                    <!-- Pilih Layanan -->
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm lg:col-span-2 space-y-4">
-                        <h3 class="font-bold text-slate-700 border-b pb-2">Pilih Layanan & Perawatan</h3>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            <button onclick="addToCart('Gel Polish', 50000)" class="p-3 border rounded-lg text-left hover:border-pink-500 hover:bg-pink-50 transition">
-                                <div class="font-semibold text-xs">Gel Polish</div>
-                                <div class="text-pink-600 font-bold text-xs mt-1">Rp 50.000</div>
-                            </button>
-                            <button onclick="addToCart('Gel Polish + Overlay', 65000)" class="p-3 border rounded-lg text-left hover:border-pink-500 hover:bg-pink-50 transition">
-                                <div class="font-semibold text-xs">Gel + Overlay</div>
-                                <div class="text-pink-600 font-bold text-xs mt-1">Rp 65.000</div>
-                            </button>
-                            <button onclick="addToCart('Express Manicure', 30000)" class="p-3 border rounded-lg text-left hover:border-pink-500 hover:bg-pink-50 transition">
-                                <div class="font-semibold text-xs">Express Manicure</div>
-                                <div class="text-pink-600 font-bold text-xs mt-1">Rp 30.000</div>
-                            </button>
-                            <button onclick="addToCart('Nail Extension (Soft Gel Tip)', 4000)" class="p-3 border rounded-lg text-left hover:border-pink-500 hover:bg-pink-50 transition">
-                                <div class="font-semibold text-xs">Extension (/kuku)</div>
-                                <div class="text-pink-600 font-bold text-xs mt-1">Rp 4.000</div>
-                            </button>
-                            <button onclick="addToCart('Art Design', 5000)" class="p-3 border rounded-lg text-left hover:border-pink-500 hover:bg-pink-50 transition">
-                                <div class="font-semibold text-xs">Art Design (/kuku)</div>
-                                <div class="text-pink-600 font-bold text-xs mt-1">Rp 5.000</div>
-                            </button>
-                            <button onclick="addToCart('Gel Removal', 25000)" class="p-3 border rounded-lg text-left hover:border-pink-500 hover:bg-pink-50 transition">
-                                <div class="font-semibold text-xs">Gel Removal</div>
-                                <div class="text-pink-600 font-bold text-xs mt-1">Rp 25.000</div>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Rincian Kasir -->
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
-                        <h3 class="font-bold text-slate-700 border-b pb-2">Rincian Transaksi</h3>
-                        
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Pelanggan</label>
-                            <input type="text" id="posCustomerName" placeholder="Masukkan nama pelanggan..." class="w-full border rounded-lg p-2 text-xs">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Potongan DP (Jika ada)</label>
-                            <input type="number" id="posDP" oninput="updateCartUI()" value="0" placeholder="Rp 0" class="w-full border rounded-lg p-2 text-xs">
-                        </div>
-
-                        <div id="cartItems" class="space-y-2 min-h-[100px] text-xs text-slate-500 border-b border-t py-2 my-2">
-                            Keranjang kosong.
-                        </div>
-
-                        <div class="space-y-1">
-                            <div class="flex justify-between text-xs text-slate-500">
-                                <span>Subtotal:</span>
-                                <span id="cartSubtotal">Rp 0</span>
-                            </div>
-                            <div class="flex justify-between font-bold text-base text-slate-800">
-                                <span>Sisa Pembayaran:</span>
-                                <span id="cartTotal" class="text-pink-600">Rp 0</span>
-                            </div>
-                        </div>
-
-                        <button onclick="processPayment()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg text-xs transition">
-                            <i class="fa-solid fa-check mr-1"></i> Selesaikan Transaksi
-                        </button>
-                    </div>
-
-                </div>
-            </section>
-
-            <!-- RESERVASI & DP -->
-            <section id="page-reservation" class="space-y-6 hidden">
-                <h2 class="text-2xl font-bold text-slate-800">Reservasi & Booking DP</h2>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <form onsubmit="addReservation(event)" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
-                        <h3 class="font-bold text-slate-700 border-b pb-2">Tambah Booking Baru</h3>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Pelanggan</label>
-                            <input type="text" id="resName" required class="w-full border rounded-lg p-2 text-xs">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Tanggal & Jam Kunjungan</label>
-                            <input type="datetime-local" id="resDate" required class="w-full border rounded-lg p-2 text-xs">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Pilih Layanan</label>
-                            <input type="text" id="resService" placeholder="Contoh: Gel Polish + Art Design" required class="w-full border rounded-lg p-2 text-xs">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nominal DP (Rp)</label>
-                            <input type="number" id="resDP" value="0" class="w-full border rounded-lg p-2 text-xs">
-                        </div>
-                        <button type="submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 rounded-lg text-xs transition">Simpan Reservasi</button>
-                    </form>
-
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm lg:col-span-2 space-y-4">
-                        <h3 class="font-bold text-slate-700 border-b pb-2">Daftar Reservasi Active</h3>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-xs text-left">
-                                <thead class="bg-slate-100 text-slate-600 font-bold">
-                                    <tr>
-                                        <th class="p-2">Pelanggan</th>
-                                        <th class="p-2">Tanggal</th>
-                                        <th class="p-2">Layanan</th>
-                                        <th class="p-2">DP</th>
-                                        <th class="p-2">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="resTableBody" class="divide-y">
-                                    <tr><td colspan="5" class="text-center p-4 text-slate-400">Belum ada reservasi.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- STOK ALAT & BAHAN -->
-            <section id="page-inventory" class="space-y-6 hidden">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-2xl font-bold text-slate-800">Manajemen Stok Bahan Studio</h2>
-                    <button onclick="toggleModal('modalInventory')" class="bg-pink-600 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-pink-700">+ Tambah Item</button>
-                </div>
-
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
-                    <table class="w-full text-xs text-left">
-                        <thead class="bg-slate-100 text-slate-600 font-bold">
-                            <tr>
-                                <th class="p-3">Nama Barang/Bahan</th>
-                                <th class="p-3">Kategori</th>
-                                <th class="p-3">Jumlah Stok</th>
-                                <th class="p-3">Status</th>
-                                <th class="p-3">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventoryTable" class="divide-y">
-                            <!-- Populated via JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- PENGELUARAN & BUKTI NOTA -->
-            <section id="page-expenses" class="space-y-6 hidden">
-                <h2 class="text-2xl font-bold text-slate-800">Pencatatan Pengeluaran & Nota</h2>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <form onsubmit="addExpense(event)" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
-                        <h3 class="font-bold text-slate-700 border-b pb-2">Tambah Pengeluaran</h3>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Judul / Keperluan</label>
-                            <input type="text" id="expTitle" placeholder="Contoh: Beli Kuteks Gel Baru" required class="w-full border rounded-lg p-2 text-xs">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nominal (Rp)</label>
-                            <input type="number" id="expAmount" required class="w-full border rounded-lg p-2 text-xs">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Foto Bukti / Nota Pembayaran</label>
-                            <input type="file" id="expPhoto" accept="image/*" class="w-full border rounded-lg p-1 text-xs">
-                        </div>
-                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-xs transition">Simpan Pengeluaran</button>
-                    </form>
-
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm lg:col-span-2 space-y-4">
-                        <h3 class="font-bold text-slate-700 border-b pb-2">Riwayat Pengeluaran</h3>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-xs text-left">
-                                <thead class="bg-slate-100 text-slate-600 font-bold">
-                                    <tr>
-                                        <th class="p-2">Keperluan</th>
-                                        <th class="p-2">Nominal</th>
-                                        <th class="p-2">Bukti Nota</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="expensesTable" class="divide-y">
-                                    <!-- Populated via JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- DAFTAR HARGA -->
-            <section id="page-pricelist" class="space-y-6 hidden">
-                <h2 class="text-2xl font-bold text-slate-800">Price List Resmi Delvira Nails</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                    <div class="bg-white p-4 rounded-xl border shadow-sm">
-                        <h3 class="font-bold text-pink-900 border-b pb-2 mb-2">HAND CARE</h3>
-                        <div class="flex justify-between py-1"><span>Express Manicure</span><span class="font-bold text-pink-600">Rp 30.000</span></div>
-                    </div>
-                    <div class="bg-white p-4 rounded-xl border shadow-sm">
-                        <h3 class="font-bold text-pink-900 border-b pb-2 mb-2">GEL POLISH</h3>
-                        <div class="flex justify-between py-1"><span>Gel Polish</span><span class="font-bold text-pink-600">Rp 50.000</span></div>
-                        <div class="flex justify-between py-1"><span>Gel Polish + Overlay</span><span class="font-bold text-pink-600">Rp 65.000</span></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- DATA PELANGGAN & LAPORAN -->
-            <section id="page-customers" class="space-y-6 hidden">
-                <h2 class="text-2xl font-bold text-slate-800">Pelanggan & Poin Loyalitas</h2>
-                <div class="bg-white p-5 rounded-xl border shadow-sm text-xs text-slate-500">
-                    Sistem otomatis menyimpan riwayat transaksi pelanggan saat transaksi di kasir diproses.
-                </div>
-            </section>
-
-            <section id="page-reports" class="space-y-6 hidden">
-                <h2 class="text-2xl font-bold text-slate-800">Laporan Ringkasan Keuangan</h2>
-                <div class="bg-white p-5 rounded-xl border shadow-sm space-y-2 text-xs">
-                    <p>Laporan pendapatan & pengeluaran dapat diulas melalui ringkasan grafik di Halaman Dashboard utama.</p>
-                </div>
-            </section>
-
+            </form>
         </div>
-    </main>
 
-    <!-- MODAL POPUP STRUK BUKTI PEMBAYARAN -->
-    <div id="modalReceipt" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-white rounded-xl max-w-sm w-full p-6 space-y-4">
+        <!-- Tabel Price List -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-4 bg-pink-50 border-b border-pink-100 flex justify-between items-center">
+                <h3 class="font-bold text-gray-700 text-lg">Daftar Harga & Layanan</h3>
+                <span id="total-services" class="text-xs bg-pink-200 text-pink-800 px-2 py-1 rounded-full font-semibold">0 Layanan</span>
+            </div>
             
-            <!-- AREA STRUK YANG BISA DI-DOWNLOAD -->
-            <div id="receiptContent" class="bg-white p-4 border rounded-lg text-slate-800 space-y-3 font-mono text-xs">
-                <div class="text-center border-b pb-3">
-                    <h2 class="font-bold text-base">DELVIRA NAILS</h2>
-                    <p class="text-[10px] text-slate-500">Nail Art Studio & Beauty</p>
-                    <p class="text-[10px] text-slate-500">Bangsal, Mojokerto | 0821-3959-0498</p>
-                </div>
-                <div class="space-y-1">
-                    <p>Pelanggan: <span id="recCustomer" class="font-bold"></span></p>
-                    <p>Tanggal: <span id="recDate"></span></p>
-                </div>
-                <div border-t border-b py-2 class="space-y-1 border-y" id="recItems">
-                    <!-- Items -->
-                </div>
-                <div class="space-y-1 text-right">
-                    <p>Subtotal: <span id="recSubtotal"></span></p>
-                    <p>Potongan DP: <span id="recDP"></span></p>
-                    <p class="font-bold text-sm">Total Bayar: <span id="recTotal"></span></p>
-                </div>
-                <div class="text-center pt-2 border-t text-[10px] text-slate-400">
-                    <p>Terima kasih atas kunjungan Anda!</p>
-                    <p>IG: @delviranaills</p>
-                </div>
-            </div>
-
-            <!-- TOMBOL AKSI -->
-            <div class="flex gap-2">
-                <button onclick="downloadReceipt()" class="flex-1 bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 rounded-lg text-xs">
-                    <i class="fa-solid fa-download mr-1"></i> Download Struk
-                </button>
-                <button onclick="toggleModal('modalReceipt')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2 rounded-lg text-xs">
-                    Tutup
-                </button>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 text-gray-600 text-sm border-b">
+                            <th class="p-3">No</th>
+                            <th class="p-3">Nama Layanan</th>
+                            <th class="p-3">Harga</th>
+                            <th class="p-3 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="price-list-table">
+                        <!-- Data Layanan Akan Muncul Di Sini -->
+                    </tbody>
+                </table>
             </div>
         </div>
+
     </div>
 
-    <!-- MODAL TAMBAH STOK -->
-    <div id="modalInventory" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 p-4">
-        <form onsubmit="addInventoryItem(event)" class="bg-white rounded-xl max-w-sm w-full p-5 space-y-3">
-            <h3 class="font-bold text-sm text-slate-800 border-b pb-2">Tambah Stok Alat / Bahan</h3>
-            <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Barang</label>
-                <input type="text" id="invName" required class="w-full border rounded-lg p-2 text-xs">
-            </div>
-            <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Kategori</label>
-                <input type="text" id="invCategory" placeholder="Kuteks / Vitamin / Aksesoris" required class="w-full border rounded-lg p-2 text-xs">
-            </div>
-            <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Jumlah Stok</label>
-                <input type="number" id="invQty" required class="w-full border rounded-lg p-2 text-xs">
-            </div>
-            <div class="flex justify-end gap-2 pt-2">
-                <button type="button" onclick="toggleModal('modalInventory')" class="bg-slate-200 text-xs px-3 py-2 rounded-lg">Batal</button>
-                <button type="submit" class="bg-pink-600 text-white text-xs font-bold px-3 py-2 rounded-lg">Simpan</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- SCRIPT JAVASCRIPT & LOCALSTORAGE -->
+    <!-- Script JavaScript untuk Operasi Tambah, Edit, Hapus -->
     <script>
-        // STATE UTAMA (LocalStorage Persist)
-        let cart = [];
-        let reservations = JSON.parse(localStorage.getItem('delvira_res')) || [];
-        let inventory = JSON.parse(localStorage.getItem('delvira_inv')) || [
-            { name: 'Gel Polish Red', category: 'Kuteks', qty: 5 },
-            { name: 'Kapas Bebas Serat', category: 'Bahan', qty: 2 }
+        // Data Awal Default Price List Delvira Nails
+        const defaultServices = [
+            { name: "Manicure Express", price: 35000 },
+            { name: "Gel Polish Hand", price: 50000 },
+            { name: "Nail Art Basic / Finger", price: 5000 },
+            { name: "Nail Extension Express", price: 100000 },
+            { name: "Remove Gel Polish", price: 20000 }
         ];
-        let expenses = JSON.parse(localStorage.getItem('delvira_exp')) || [];
-        let totalIncome = Number(localStorage.getItem('delvira_income')) || 0;
 
-        function switchTab(tabId) {
-            const pages = ['dashboard', 'pos', 'pricelist', 'reservation', 'inventory', 'expenses', 'customers', 'reports'];
-            pages.forEach(p => {
-                document.getElementById('page-' + p).classList.add('hidden');
-                document.getElementById('nav-' + p)?.classList.remove('bg-pink-800', 'text-white');
-            });
-            document.getElementById('page-' + tabId).classList.remove('hidden');
-            document.getElementById('nav-' + tabId)?.classList.add('bg-pink-800', 'text-white');
-        }
+        // Ambil data dari LocalStorage atau pakai default jika belum ada
+        let services = JSON.parse(localStorage.getItem('delvira_services')) || defaultServices;
 
-        function toggleModal(id) {
-            document.getElementById(id).classList.toggle('hidden');
-        }
+        const priceForm = document.getElementById('price-form');
+        const serviceNameInput = document.getElementById('service-name');
+        const servicePriceInput = document.getElementById('service-price');
+        const serviceIndexInput = document.getElementById('service-index');
+        const priceListTable = document.getElementById('price-list-table');
+        const formTitle = document.getElementById('form-title');
+        const btnSubmit = document.getElementById('btn-submit');
+        const btnCancel = document.getElementById('btn-cancel');
+        const totalServices = document.getElementById('total-services');
 
-        // KASIR & STRUK
-        function addToCart(name, price) {
-            cart.push({ name, price });
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            const cartContainer = document.getElementById('cartItems');
-            const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-            const dp = Number(document.getElementById('posDP').value) || 0;
-            const total = Math.max(0, subtotal - dp);
-
-            if(cart.length === 0) {
-                cartContainer.innerHTML = 'Keranjang kosong.';
-            } else {
-                cartContainer.innerHTML = cart.map(i => `<div class="flex justify-between py-1"><span>${i.name}</span><span class="font-semibold">Rp ${i.price.toLocaleString()}</span></div>`).join('');
-            }
-
-            document.getElementById('cartSubtotal').innerText = 'Rp ' + subtotal.toLocaleString();
-            document.getElementById('cartTotal').innerText = 'Rp ' + total.toLocaleString();
-        }
-
-        function processPayment() {
-            const customer = document.getElementById('posCustomerName').value || 'Pelanggan Umum';
-            const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-            const dp = Number(document.getElementById('posDP').value) || 0;
-            const total = Math.max(0, subtotal - dp);
-
-            if(cart.length === 0) return alert('Pilih layanan terlebih dahulu!');
-
-            // Update Total Income
-            totalIncome += total;
-            localStorage.setItem('delvira_income', totalIncome);
-
-            // Tampilkan Struk Bukti Pembayaran
-            document.getElementById('recCustomer').innerText = customer;
-            document.getElementById('recDate').innerText = new Date().toLocaleDateString('id-ID');
-            document.getElementById('recItems').innerHTML = cart.map(i => `<div class="flex justify-between"><span>${i.name}</span><span>Rp ${i.price.toLocaleString()}</span></div>`).join('');
-            document.getElementById('recSubtotal').innerText = 'Rp ' + subtotal.toLocaleString();
-            document.getElementById('recDP').innerText = 'Rp ' + dp.toLocaleString();
-            document.getElementById('recTotal').innerText = 'Rp ' + total.toLocaleString();
-
-            toggleModal('modalReceipt');
+        // Fungsi menampilkan data ke tabel
+        function renderTable() {
+            priceListTable.innerHTML = '';
             
-            // Reset Form
-            cart = [];
-            document.getElementById('posCustomerName').value = '';
-            document.getElementById('posDP').value = '0';
-            updateCartUI();
-            updateDashboard();
-        }
-
-        // DOWNLOAD STRUK SEBAGAI GAMBAR/PDF
-        function downloadReceipt() {
-            const receiptArea = document.getElementById('receiptContent');
-            html2canvas(receiptArea).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `Struk_DelviraNails_${Date.now()}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-            });
-        }
-
-        // RESERVASI
-        function addReservation(e) {
-            e.preventDefault();
-            const newRes = {
-                id: Date.now(),
-                name: document.getElementById('resName').value,
-                date: document.getElementById('resDate').value,
-                service: document.getElementById('resService').value,
-                dp: Number(document.getElementById('resDP').value) || 0
-            };
-            reservations.push(newRes);
-            localStorage.setItem('delvira_res', JSON.stringify(reservations));
-            renderReservations();
-            e.target.reset();
-        }
-
-        function renderReservations() {
-            const tbody = document.getElementById('resTableBody');
-            if(reservations.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-slate-400">Belum ada reservasi.</td></tr>';
-            } else {
-                tbody.innerHTML = reservations.map(r => `
+            if (services.length === 0) {
+                priceListTable.innerHTML = `
                     <tr>
-                        <td class="p-2 font-bold">${r.name}</td>
-                        <td class="p-2">${new Date(r.date).toLocaleString('id-ID')}</td>
-                        <td class="p-2">${r.service}</td>
-                        <td class="p-2 text-emerald-600 font-bold">Rp ${r.dp.toLocaleString()}</td>
-                        <td class="p-2"><button onclick="deleteRes(${r.id})" class="text-red-500 font-bold">Hapus</button></td>
-                    </tr>
-                `).join('');
+                        <td colspan="4" class="text-center p-6 text-gray-400">Belum ada layanan. Silakan tambah layanan di atas.</td>
+                    </tr>`;
+                totalServices.innerText = "0 Layanan";
+                return;
             }
-        }
 
-        function deleteRes(id) {
-            reservations = reservations.filter(r => r.id !== id);
-            localStorage.setItem('delvira_res', JSON.stringify(reservations));
-            renderReservations();
-        }
-
-        // STOK INVENTORY
-        function addInventoryItem(e) {
-            e.preventDefault();
-            const item = {
-                name: document.getElementById('invName').value,
-                category: document.getElementById('invCategory').value,
-                qty: Number(document.getElementById('invQty').value)
-            };
-            inventory.push(item);
-            localStorage.setItem('delvira_inv', JSON.stringify(inventory));
-            renderInventory();
-            toggleModal('modalInventory');
-            e.target.reset();
-        }
-
-        function renderInventory() {
-            const tbody = document.getElementById('inventoryTable');
-            tbody.innerHTML = inventory.map((item, index) => `
-                <tr>
-                    <td class="p-3 font-semibold">${item.name}</td>
-                    <td class="p-3 text-slate-500">${item.category}</td>
-                    <td class="p-3 font-bold">${item.qty}</td>
-                    <td class="p-3">
-                        <span class="px-2 py-1 rounded-full text-[10px] font-bold ${item.qty <= 3 ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'}">
-                            ${item.qty <= 3 ? 'Menipis' : 'Cukup'}
-                        </span>
+            services.forEach((service, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b hover:bg-pink-50/50 transition";
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-gray-500">${index + 1}</td>
+                    <td class="p-3 font-medium text-gray-800">${service.name}</td>
+                    <td class="p-3 font-bold text-pink-600">Rp ${Number(service.price).toLocaleString('id-ID')}</td>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="editService(${index})" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1 rounded text-sm transition">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button onclick="deleteService(${index})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition">
+                            <i class="fas fa-trash"></i> Hapus
+                        </button>
                     </td>
-                    <td class="p-3"><button onclick="deleteInv(${index})" class="text-red-500"><i class="fa-solid fa-trash"></i></button></td>
-                </tr>
-            `).join('');
+                `;
+                priceListTable.appendChild(tr);
+            });
+
+            totalServices.innerText = `${services.length} Layanan`;
+            // Simpan ke LocalStorage browser
+            localStorage.setItem('delvira_services', JSON.stringify(services));
         }
 
-        function deleteInv(index) {
-            inventory.splice(index, 1);
-            localStorage.setItem('delvira_inv', JSON.stringify(inventory));
-            renderInventory();
-        }
-
-        // PENGELUARAN & NOTA
-        function addExpense(e) {
+        // Simpan Data (Tambah atau Update)
+        priceForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const fileInput = document.getElementById('expPhoto');
-            const file = fileInput.files[0];
+            
+            const name = serviceNameInput.value.trim();
+            const price = parseFloat(servicePriceInput.value);
+            const index = parseInt(serviceIndexInput.value);
 
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    saveExpenseData(evt.target.result);
-                };
-                reader.readAsDataURL(file);
+            if (!name || isNaN(price)) return;
+
+            if (index === -1) {
+                // Tambah Layanan Baru
+                services.push({ name, price });
             } else {
-                saveExpenseData(null);
+                // Update Layanan
+                services[index] = { name, price };
+            }
+
+            resetForm();
+            renderTable();
+        });
+
+        // Edit Layanan
+        function editService(index) {
+            serviceNameInput.value = services[index].name;
+            servicePriceInput.value = services[index].price;
+            serviceIndexInput.value = index;
+
+            formTitle.innerHTML = `<i class="fas fa-edit"></i> Edit Layanan`;
+            btnSubmit.innerHTML = `<i class="fas fa-check"></i> Update`;
+            btnSubmit.className = "w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 px-4 rounded-lg transition duration-200 shadow";
+            btnCancel.classList.remove('hidden');
+        }
+
+        // Hapus Layanan
+        function deleteService(index) {
+            if (confirm(`Apakah Anda yakin ingin menghapus "${services[index].name}"?`)) {
+                services.splice(index, 1);
+                renderTable();
             }
         }
 
-        function saveExpenseData(photoUrl) {
-            const item = {
-                title: document.getElementById('expTitle').value,
-                amount: Number(document.getElementById('expAmount').value),
-                photo: photoUrl
-            };
-            expenses.push(item);
-            localStorage.setItem('delvira_exp', JSON.stringify(expenses));
-            renderExpenses();
-            document.getElementById('expTitle').value = '';
-            document.getElementById('expAmount').value = '';
-            document.getElementById('expPhoto').value = '';
+        // Reset Form ke Tampilan Tambah
+        function resetForm() {
+            serviceNameInput.value = '';
+            servicePriceInput.value = '';
+            serviceIndexInput.value = '-1';
+
+            formTitle.innerHTML = `<i class="fas fa-plus-circle"></i> Tambah Layanan Baru`;
+            btnSubmit.innerHTML = `<i class="fas fa-save mr-1"></i> Simpan`;
+            btnSubmit.className = "w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-2.5 px-4 rounded-lg transition duration-200 shadow";
+            btnCancel.classList.add('hidden');
         }
 
-        function renderExpenses() {
-            const tbody = document.getElementById('expensesTable');
-            tbody.innerHTML = expenses.map(e => `
-                <tr>
-                    <td class="p-2 font-semibold">${e.title}</td>
-                    <td class="p-2 text-red-500 font-bold">Rp ${e.amount.toLocaleString()}</td>
-                    <td class="p-2">
-                        ${e.photo ? `<a href="${e.photo}" target="_blank" class="text-blue-500 underline font-bold">Lihat Nota</a>` : '-'}
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function updateDashboard() {
-            document.getElementById('dash-income-today').innerText = 'Rp ' + totalIncome.toLocaleString();
-            
-            const totalExp = expenses.reduce((sum, item) => sum + item.amount, 0);
-            document.getElementById('dash-expenses').innerText = 'Rp ' + totalExp.toLocaleString();
-
-            document.getElementById('dash-res-count').innerText = reservations.length;
-            
-            const lowStock = inventory.filter(i => i.qty <= 3).length;
-            document.getElementById('dash-stock-alert').innerText = lowStock + ' Item';
-        }
-
-        // INIT ON LOAD
-        window.onload = function() {
-            renderReservations();
-            renderInventory();
-            renderExpenses();
-            updateDashboard();
-
-            // Charts
-            new Chart(document.getElementById('chartIncome').getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Ming'],
-                    datasets: [{ label: 'Pendapatan', data: [0, 0, 0, 0, 0, totalIncome, 0], borderColor: '#db2777', tension: 0.3 }]
-                }
-            });
-
-            new Chart(document.getElementById('chartServices').getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Hand Care', 'Gel Polish', 'Design', 'Removal'],
-                    datasets: [{ data: [1, 3, 2, 1], backgroundColor: ['#f472b6', '#db2777', '#9d174d', '#cbd5e1'] }]
-                }
-            });
-        };
+        // Jalankan fungsi pertama kali saat halaman dimuat
+        renderTable();
     </script>
+
 </body>
 </html>
