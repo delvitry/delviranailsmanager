@@ -3,231 +3,874 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delvira Nail Art Studio</title>
+    <title>Delvira Nails Manager - POS, Finance & Analytics</title>
+    <!-- Tailwind CSS & FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#FF6B9D',
-                        secondary: '#FFC8DD',
-                        netral: '#F8F9FA',
-                        gelap: '#2D3436'
-                    },
-                    fontFamily: {
-                        sans: ['Segoe UI', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .content-auto {
-                content-visibility: auto;
-            }
-            .card-shadow {
-                box-shadow: 0 10px 25px -5px rgba(255, 107, 157, 0.2);
-            }
-            .menu-active {
-                @apply bg-primary text-white;
-            }
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @media print {
+            body * { visibility: hidden; }
+            #receipt-modal-content, #receipt-modal-content * { visibility: visible; }
+            #receipt-modal-content { position: absolute; left: 0; top: 0; width: 100%; border: none; }
+            .no-print { display: none !important; }
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gelap">
-    <!-- NAVBAR -->
-    <nav class="bg-white shadow-md fixed w-full top-0 z-50">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-3">
-                <div class="text-[22px] font-bold text-primary flex items-center">
-                    <i class="fa fa-leaf mr-2"></i>
-                    Delvira Nail Studio
+<body class="bg-pink-50/30 text-gray-800 font-sans min-h-screen">
+
+    <!-- Header Navbar -->
+    <header class="bg-gradient-to-r from-pink-600 to-pink-500 text-white shadow-md sticky top-0 z-40 no-print">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-gem text-2xl text-pink-200"></i>
+                <h1 class="text-xl md:text-2xl font-bold tracking-wide">Delvira Nails Studio</h1>
+            </div>
+            <span class="text-xs md:text-sm bg-pink-700/60 px-3 py-1 rounded-full font-medium border border-pink-300/40">
+                POS & Finance System
+            </span>
+        </div>
+    </header>
+
+    <!-- Main App -->
+    <main class="max-w-6xl mx-auto p-4 md:p-6 space-y-6 no-print">
+
+        <!-- Navigation Tabs -->
+        <div class="flex border border-pink-200 bg-white rounded-2xl p-1.5 shadow-sm gap-1 overflow-x-auto">
+            <button onclick="switchTab('kasir')" id="tab-kasir" class="flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-bold text-xs md:text-sm transition-all bg-pink-600 text-white shadow whitespace-nowrap">
+                <i class="fas fa-cash-register mr-1"></i>Kasir & Booking
+            </button>
+            <button onclick="switchTab('keuangan')" id="tab-keuangan" class="flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-bold text-xs md:text-sm transition-all text-gray-600 hover:text-pink-600 whitespace-nowrap">
+                <i class="fas fa-chart-line mr-1"></i>Laporan & Grafik
+            </button>
+            <button onclick="switchTab('pengeluaran')" id="tab-pengeluaran" class="flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-bold text-xs md:text-sm transition-all text-gray-600 hover:text-pink-600 whitespace-nowrap">
+                <i class="fas fa-wallet mr-1"></i>Pengeluaran
+            </button>
+            <button onclick="switchTab('pricelist')" id="tab-pricelist" class="flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-bold text-xs md:text-sm transition-all text-gray-600 hover:text-pink-600 whitespace-nowrap">
+                <i class="fas fa-tags mr-1"></i>Price List
+            </button>
+            <button onclick="switchTab('laporan')" id="tab-laporan" class="flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-bold text-xs md:text-sm transition-all text-gray-600 hover:text-pink-600 whitespace-nowrap">
+                <i class="fas fa-receipt mr-1"></i>Riwayat Struk
+            </button>
+        </div>
+
+        <!-- ================= TAB 1: KASIR & BOOKING ================= -->
+        <section id="sec-kasir" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Form Pelanggan & Treatment -->
+            <div class="lg:col-span-2 space-y-4">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-3">
+                    <h2 class="text-base font-bold text-gray-800 flex items-center gap-2">
+                        <i class="fas fa-user-clock text-pink-500"></i> Informasi Klien & Reservasi
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Nama Klien</label>
+                            <input type="text" id="pos-customer" placeholder="Nama Pelanggan..." class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-pink-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">No. WhatsApp / HP</label>
+                            <input type="text" id="pos-phone" placeholder="08xxxxxxxxxx" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-pink-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Tanggal Reservasi / Treatment</label>
+                            <input type="date" id="pos-date" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-pink-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Jam Reservasi</label>
+                            <input type="time" id="pos-time" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-pink-500 outline-none">
+                        </div>
+                    </div>
                 </div>
-                <div class="hidden md:flex space-x-6">
-                    <a href="#beranda" class="hover:text-primary transition">Beranda</a>
-                    <a href="#layanan" class="hover:text-primary transition">Layanan</a>
-                    <a href="#harga" class="hover:text-primary transition">Daftar Harga</a>
-                    <a href="#kontak" class="hover:text-primary transition">Kontak</a>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                    <h2 class="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
+                        <i class="fas fa-hand-sparkles text-pink-500"></i> Pilih Treatment
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Filter Kategori</label>
+                            <select id="pos-category-filter" onchange="filterPosServices()" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-pink-500 outline-none bg-white">
+                                <option value="ALL">Semua Kategori</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Pilih Layanan</label>
+                            <select id="pos-service-select" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-pink-500 outline-none bg-white">
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="addToCart()" class="w-full bg-pink-50 hover:bg-pink-100 text-pink-600 font-bold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 border border-pink-200 text-sm">
+                        <i class="fas fa-plus-circle"></i> Tambahkan Layanan
+                    </button>
+
+                    <div class="mt-4 border-t pt-3">
+                        <h3 class="font-bold text-gray-700 text-xs uppercase mb-2">Item Dipilih:</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr class="text-gray-400 border-b text-xs uppercase">
+                                        <th class="pb-2">Layanan</th>
+                                        <th class="pb-2 text-right">Harga</th>
+                                        <th class="pb-2 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cart-table-body" class="divide-y divide-gray-50"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <button class="md:hidden text-xl">
-                    <i class="fa fa-bars"></i>
+            </div>
+
+            <!-- Pembayaran & DP -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between space-y-4">
+                <div>
+                    <h2 class="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
+                        <i class="fas fa-calculator text-pink-500"></i> Pembayaran & DP
+                    </h2>
+
+                    <div class="space-y-2 bg-pink-50/60 p-4 rounded-xl border border-pink-100 text-sm">
+                        <div class="flex justify-between text-gray-600">
+                            <span>Total Treatment</span>
+                            <span id="pos-subtotal" class="font-bold">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-gray-600">
+                            <span>DP Diterima</span>
+                            <span id="pos-dp-display" class="font-bold text-pink-600">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-base font-extrabold text-gray-800 border-t border-pink-200/80 pt-2">
+                            <span>Sisa Bayar</span>
+                            <span id="pos-remaining" class="text-pink-600">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Uang DP / Down Payment (Rp)</label>
+                            <input type="number" id="pos-dp-amount" placeholder="0" oninput="calculatePayment()" class="w-full border rounded-xl p-2.5 text-sm font-semibold focus:ring-2 focus:ring-pink-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Uang Bayar / Pelunasan (Rp)</label>
+                            <input type="number" id="pos-pay-amount" placeholder="0" oninput="calculatePayment()" class="w-full border rounded-xl p-2.5 text-sm font-semibold focus:ring-2 focus:ring-pink-500 outline-none">
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl border">
+                            <span class="text-xs font-semibold text-gray-500 uppercase">Kembalian:</span>
+                            <span id="pos-change" class="text-sm font-bold text-green-600">Rp 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="processCheckout()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm">
+                    <i class="fas fa-receipt"></i> Simpan & Cetak Struk
+                </button>
+            </div>
+        </section>
+
+
+        <!-- ================= TAB 2: LAPORAN KEUANGAN & GRAFIK ================= -->
+        <section id="sec-keuangan" class="hidden space-y-6">
+            <!-- Filter Laporan Periode -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-wrap justify-between items-center gap-3">
+                <h2 class="text-base font-bold text-gray-800 flex items-center gap-2">
+                    <i class="fas fa-chart-pie text-pink-500"></i> Laporan Laba Rugi Studio
+                </h2>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-gray-500">Filter Periode:</span>
+                    <select id="finance-period" onchange="renderFinanceDashboard()" class="border rounded-xl px-3 py-1.5 text-xs font-bold text-pink-600 border-pink-200 outline-none bg-pink-50/50">
+                        <option value="daily">Hari Ini</option>
+                        <option value="weekly">Minggu Ini</option>
+                        <option value="monthly" selected>Bulan Ini</option>
+                        <option value="yearly">Tahun Ini</option>
+                        <option value="all">Semua Waktu</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-emerald-100 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-emerald-600 font-bold uppercase">Total Pemasukan</p>
+                        <h3 id="card-income" class="text-2xl font-black text-gray-800 mt-1">Rp 0</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center text-xl font-bold"><i class="fas fa-arrow-down"></i></div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-rose-100 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-rose-500 font-bold uppercase">Total Pengeluaran</p>
+                        <h3 id="card-expense" class="text-2xl font-black text-gray-800 mt-1">Rp 0</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center text-xl font-bold"><i class="fas fa-arrow-up"></i></div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-pink-100 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-pink-600 font-bold uppercase">Laba Bersih (Net Profit)</p>
+                        <h3 id="card-profit" class="text-2xl font-black text-pink-600 mt-1">Rp 0</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-pink-50 text-pink-500 rounded-2xl flex items-center justify-center text-xl font-bold"><i class="fas fa-coins"></i></div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Bar Chart Penjualan vs Pengeluaran -->
+                <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2">
+                        <i class="fas fa-chart-column text-pink-500"></i> Perbandingan Penjualan vs Pengeluaran
+                    </h3>
+                    <div class="relative h-64 w-full">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Doughnut Chart Kategori Pengeluaran -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2">
+                        <i class="fas fa-chart-pie text-pink-500"></i> Alokasi Pengeluaran
+                    </h3>
+                    <div class="relative h-64 w-full flex items-center justify-center">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= TAB 3: CATAT PENGELUARAN ================= -->
+        <section id="sec-pengeluaran" class="space-y-6 hidden">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                <h2 class="text-base font-bold text-pink-600 mb-3 flex items-center gap-2">
+                    <i class="fas fa-plus-circle"></i> Catat Pengeluaran Studio
+                </h2>
+                <form id="exp-form" onsubmit="saveExpense(event)" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Tanggal</label>
+                        <input type="date" id="exp-date" required class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-pink-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Kategori Pengeluaran</label>
+                        <select id="exp-category" required class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-pink-500 outline-none bg-white">
+                            <option value="Bahan & Peralatan">Bahan & Kutek (Supplies)</option>
+                            <option value="Sewa & Operasional">Sewa & Listrik Studio</option>
+                            <option value="Gaji & Komisi">Gaji & Komisi Karyawan</option>
+                            <option value="Pemasaran & Promo">Iklan & Pemasaran</option>
+                            <option value="Lain-lain">Lain-lain</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Deskripsi / Item</label>
+                        <input type="text" id="exp-desc" placeholder="misal: Beli 10 Gel Polish" required class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-pink-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Jumlah Nominal (Rp)</label>
+                        <input type="number" id="exp-amount" placeholder="150000" required class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-pink-500 outline-none">
+                    </div>
+                    <div class="md:col-span-4 flex justify-end">
+                        <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition shadow">
+                            <i class="fas fa-save mr-1"></i> Simpan Pengeluaran
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tabel Daftar Pengeluaran -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
+                    <h3 class="font-bold text-gray-700 text-sm">Daftar Pengeluaran Studio</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-400 text-xs uppercase border-b">
+                                <th class="p-3">Tanggal</th>
+                                <th class="p-3">Kategori</th>
+                                <th class="p-3">Deskripsi</th>
+                                <th class="p-3 text-right">Nominal</th>
+                                <th class="p-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expense-table-body" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= TAB 4: PRICE LIST MANAGER ================= -->
+        <section id="sec-pricelist" class="hidden space-y-6">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                <h2 id="pl-form-title" class="text-base font-bold text-pink-600 mb-3 flex items-center gap-2">
+                    <i class="fas fa-plus-circle"></i> Kelola Layanan / Price List
+                </h2>
+                <form id="pl-form" onsubmit="saveService(event)" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <input type="hidden" id="pl-edit-index" value="-1">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Kategori</label>
+                        <input type="text" id="pl-category" placeholder="misal: Gel Polish" required class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-pink-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Nama Layanan</label>
+                        <input type="text" id="pl-name" placeholder="misal: Gel Polish Polos" required class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-pink-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Harga (Rp)</label>
+                        <input type="number" id="pl-price" placeholder="50000" required class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-pink-500 outline-none">
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <button type="submit" id="pl-btn-submit" class="flex-1 bg-pink-600 hover:bg-pink-700 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition shadow">
+                            Simpan
+                        </button>
+                        <button type="button" id="pl-btn-cancel" onclick="resetPlForm()" class="hidden bg-gray-300 text-gray-700 font-bold py-2.5 px-4 rounded-xl text-sm transition">
+                            Batal
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
+                    <h3 class="font-bold text-gray-700 text-sm">Daftar Service Studio</h3>
+                    <button onclick="restoreDefaultServices()" class="text-xs bg-gray-200 hover:bg-gray-300 px-2.5 py-1 rounded-lg">Reset Default</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-400 text-xs uppercase border-b">
+                                <th class="p-3">No</th>
+                                <th class="p-3">Kategori</th>
+                                <th class="p-3">Layanan</th>
+                                <th class="p-3">Harga</th>
+                                <th class="p-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pl-table-body" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= TAB 5: RIWAYAT STRUK ================= -->
+        <section id="sec-laporan" class="hidden space-y-6">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-base font-bold text-gray-800">Riwayat Booking & Transaksi</h2>
+                    <button onclick="clearHistory()" class="text-xs text-red-500 hover:underline"><i class="fas fa-trash-alt mr-1"></i>Hapus Riwayat</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-400 text-xs uppercase border-b">
+                                <th class="p-3">Tgl Booking / Treatment</th>
+                                <th class="p-3">Klien</th>
+                                <th class="p-3">Layanan</th>
+                                <th class="p-3 text-right">Total</th>
+                                <th class="p-3 text-right">DP</th>
+                                <th class="p-3 text-center">Aksi Struk</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-table-body" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= MODAL STRUK ================= -->
+    <div id="receipt-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl relative space-y-4" id="receipt-modal-content">
+            <div class="text-center border-b pb-3 space-y-1">
+                <h2 class="font-extrabold text-xl text-pink-600">DELVIRA NAILS STUDIO</h2>
+                <p class="text-xs text-gray-500">Beauty & Nail Art Specialist</p>
+                <p id="rec-date-time" class="text-[10px] text-gray-400 mt-1"></p>
+            </div>
+
+            <div class="text-xs space-y-1 text-gray-600 border-b pb-2">
+                <div class="flex justify-between"><span>Nama Klien:</span><span id="rec-customer" class="font-bold text-gray-800"></span></div>
+                <div class="flex justify-between"><span>No HP:</span><span id="rec-phone"></span></div>
+                <div class="flex justify-between"><span>Jadwal Booking:</span><span id="rec-booking-date" class="font-semibold text-pink-600"></span></div>
+            </div>
+
+            <div class="space-y-1 border-b pb-2 text-xs">
+                <p class="font-semibold text-gray-500 mb-1">Rincian Treatment:</p>
+                <div id="rec-items-list" class="space-y-1"></div>
+            </div>
+
+            <div class="text-xs space-y-1.5 pt-1">
+                <div class="flex justify-between text-gray-600"><span>Total:</span><span id="rec-total" class="font-bold"></span></div>
+                <div class="flex justify-between text-pink-600"><span>DP Dibayar:</span><span id="rec-dp" class="font-bold"></span></div>
+                <div class="flex justify-between text-gray-800 border-t pt-1 font-extrabold text-sm">
+                    <span>Sisa Pelunasan:</span><span id="rec-remaining" class="text-pink-600"></span>
+                </div>
+            </div>
+
+            <div class="text-center text-[10px] text-gray-400 pt-2 border-t">
+                <p>Terima Kasih Atas Kunjungannya! ✨</p>
+                <p class="mt-0.5">Please tag us @delviranails</p>
+            </div>
+
+            <div class="flex gap-2 pt-2 no-print">
+                <button onclick="window.print()" class="flex-1 bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
+                    <i class="fas fa-print"></i> Cetak Struk
+                </button>
+                <button onclick="closeReceiptModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-4 py-2 rounded-xl text-xs">
+                    Tutup
                 </button>
             </div>
         </div>
-    </nav>
+    </div>
 
-    <!-- BERANDA / SAMBUTAN -->
-    <section id="beranda" class="pt-28 pb-16 bg-gradient-to-br from-secondary to-white">
-        <div class="container mx-auto px-4 text-center">
-            <h1 class="text-[clamp(36px,6vw,52px)] font-bold mb-6 leading-tight">
-                Perawatan & Seni Kuku <br>
-                <span class="text-primary">Cantik & Berkualitas</span>
-            </h1>
-            <p class="text-lg md:text-xl max-w-2xl mx-auto mb-8 text-gray-700">
-                Melayani dengan hati, kuku indah menambah kepercayaan diri Anda. 
-                Alat bersih, bahan aman, hasil memuaskan!
-            </p>
-            <a href="#layanan" class="inline-block bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-8 rounded-full transition transform hover:-translate-y-1 shadow-lg">
-                Lihat Layanan Kami <i class="fa fa-arrow-right ml-2"></i>
-            </a>
-        </div>
-    </section>
 
-    <!-- LAYANAN UTAMA -->
-    <section id="layanan" class="py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-14">
-                <h2 class="text-3xl md:text-4xl font-bold mb-3">Layanan Kami</h2>
-                <p class="text-gray-600 max-w-xl mx-auto">Pilih perawatan yang paling cocok untuk Anda</p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- Kartu 1 -->
-                <div class="bg-netral rounded-xl p-8 card-shadow hover:-translate-y-2 transition duration-300">
-                    <div class="w-16 h-16 bg-secondary/50 rounded-full flex items-center justify-center mb-6">
-                        <i class="fa fa-paint-brush text-2xl text-primary"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-4">Manicure & Pedicure</h3>
-                    <p class="text-gray-600">Perawatan lengkap kuku tangan & kaki, pembersihan, bentuk, dan perawatan kulit.</p>
-                </div>
-
-                <!-- Kartu 2 -->
-                <div class="bg-netral rounded-xl p-8 card-shadow hover:-translate-y-2 transition duration-300">
-                    <div class="w-16 h-16 bg-secondary/50 rounded-full flex items-center justify-center mb-6">
-                        <i class="fa fa-magic text-2xl text-primary"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-4">Gel & Cat Kuku</h3>
-                    <p class="text-gray-600">Cat warna-warni, gel awet berkilau, banyak pilihan warna cantik.</p>
-                </div>
-
-                <!-- Kartu 3 -->
-                <div class="bg-netral rounded-xl p-8 card-shadow hover:-translate-y-2 transition duration-300">
-                    <div class="w-16 h-16 bg-secondary/50 rounded-full flex items-center justify-center mb-6">
-                        <i class="fa fa-diamond text-2xl text-primary"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-4">Desain & Hiasan</h3>
-                    <p class="text-gray-600">Lukisan kuku, hiasan mutiara/glitter sesuai permintaan.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- DAFTAR HARGA -->
-    <section id="harga" class="py-16 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-14">
-                <h2 class="text-3xl md:text-4xl font-bold mb-3">Daftar Harga</h2>
-                <p class="text-gray-600">Harga dapat berubah sewaktu-waktu</p>
-            </div>
-
-            <div class="max-w-3xl mx-auto overflow-hidden rounded-xl shadow-lg">
-                <table class="w-full bg-white">
-                    <thead class="bg-primary text-white">
-                        <tr>
-                            <th class="py-4 px-6 text-left">Jenis Layanan</th>
-                            <th class="py-4 px-6 text-right">Harga (Rp)</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100">
-                        <tr class="hover:bg-gray-50">
-                            <td class="py-4 px-6">Potong & Bentuk Kuku</td>
-                            <td class="py-4 px-6 text-right font-medium">35.000</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50">
-                            <td class="py-4 px-6">Manicure Lengkap</td>
-                            <td class="py-4 px-6 text-right font-medium">65.000</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50">
-                            <td class="py-4 px-6">Pedicure Lengkap</td>
-                            <td class="py-4 px-6 text-right font-medium">75.000</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50">
-                            <td class="py-4 px-6">Cat Kuku Biasa</td>
-                            <td class="py-4 px-6 text-right font-medium">25.000</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50">
-                            <td class="py-4 px-6">Cat Gel / UV</td>
-                            <td class="py-4 px-6 text-right font-medium">120.000</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50">
-                            <td class="py-4 px-6">Desain & Hiasan Tambahan</td>
-                            <td class="py-4 px-6 text-right font-medium">Mulai 20.000</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-
-    <!-- KONTAK / TENTANG -->
-    <section id="kontak" class="py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-14">
-                <h2 class="text-3xl md:text-4xl font-bold mb-3">Hubungi Kami</h2>
-                <p class="text-gray-600">Siap melayani pertanyaan & pemesanan Anda</p>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto">
-                <div>
-                    <h3 class="text-xl font-semibold mb-6">Informasi Studio</h3>
-                    <ul class="space-y-4">
-                        <li class="flex items-start">
-                            <i class="fa fa-map-marker text-primary mt-1 mr-4 w-5 text-center"></i>
-                            <span>Lokasi Anda, Kota Anda, Indonesia</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fa fa-phone text-primary mt-1 mr-4 w-5 text-center"></i>
-                            <span>0812-xxxx-xxxx</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fa fa-clock-o text-primary mt-1 mr-4 w-5 text-center"></i>
-                            <span>Buka: Senin - Sabtu, 09:00 - 19:00 WIB</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fa fa-instagram text-primary mt-1 mr-4 w-5 text-center"></i>
-                            <span>@delviranaill</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="text-xl font-semibold mb-6">Kirim Pesan</h3>
-                    <form class="space-y-4">
-                        <input type="text" placeholder="Nama Lengkap" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50">
-                        <input type="text" placeholder="Nomor HP" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50">
-                        <textarea placeholder="Pesan/Pertanyaan" rows="4" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"></textarea>
-                        <button type="submit" class="bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-8 rounded-lg transition">
-                            Kirim Pesan <i class="fa fa-paper-plane ml-2"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="bg-gelap text-white py-10">
-        <div class="container mx-auto px-4 text-center">
-            <p class="mb-4">Delvira Nail Art Studio © 2026 - Semua Hak Dilindungi</p>
-            <p class="text-gray-400 text-sm">Dibuat dengan penuh ketelatenan & keindahan</p>
-        </div>
-    </footer>
-
+    <!-- JAVASCRIPT SYSTEM LOGIC -->
     <script>
-        // Efek gulir halus
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
+        const defaultServices = [
+            { category: "Care & Prep", name: "Manicure Express / Basic Care", price: 35000 },
+            { category: "Care & Prep", name: "Pedicure Express / Basic Care", price: 40000 },
+            { category: "Care & Prep", name: "Mani + Pedi Combo Care", price: 70000 },
+            { category: "Gel Polish", name: "Gel Polish Hands (Polos)", price: 50000 },
+            { category: "Gel Polish", name: "Gel Polish Feet (Polos)", price: 60000 },
+            { category: "Gel Polish", name: "Gel Polish Cat Eye / Chrome (Hands)", price: 65000 },
+            { category: "Gel Polish", name: "Gel Polish Cat Eye / Chrome (Feet)", price: 75000 },
+            { category: "Nail Art", name: "Nail Art Simple Design (per jari)", price: 5000 },
+            { category: "Nail Art", name: "Nail Art Medium / French (per jari)", price: 8000 },
+            { category: "Nail Art", name: "Nail Art Complex / Character (per jari)", price: 12000 },
+            { category: "Nail Art", name: "Aksesoris / Charm 3D (per pcs)", price: 5000 },
+            { category: "Extension", name: "Overlay Gel (Pelapis Kuku Asli)", price: 75000 },
+            { category: "Extension", name: "Fake Nail Tip Extension + Gel Polos", price: 110000 },
+            { category: "Extension", name: "Soft Gel Extension + Gel Polos", price: 130000 },
+            { category: "Removal", name: "Remove Gel Polish", price: 20000 },
+            { category: "Removal", name: "Remove Nail Extension", price: 35000 }
+        ];
+
+        let services = JSON.parse(localStorage.getItem('delvira_services')) || defaultServices;
+        let cart = [];
+        let history = JSON.parse(localStorage.getItem('delvira_history')) || [];
+        let expenses = JSON.parse(localStorage.getItem('delvira_expenses')) || [];
+
+        let barChartInstance = null;
+        let pieChartInstance = null;
+
+        function saveData() {
+            localStorage.setItem('delvira_services', JSON.stringify(services));
+            localStorage.setItem('delvira_history', JSON.stringify(history));
+            localStorage.setItem('delvira_expenses', JSON.stringify(expenses));
+        }
+
+        function switchTab(tabName) {
+            ['kasir', 'keuangan', 'pengeluaran', 'pricelist', 'laporan'].forEach(t => {
+                document.getElementById(`sec-${t}`).classList.add('hidden');
+                document.getElementById(`tab-${t}`).className = "flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-bold text-xs md:text-sm transition-all text-gray-600 hover:text-pink-600 whitespace-nowrap";
             });
-        });
+            document.getElementById(`sec-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabName}`).className = "flex-1 min-w-[100px] py-2.5 px-3 rounded-xl font-bold text-xs md:text-sm transition-all bg-pink-600 text-white shadow whitespace-nowrap";
+
+            if(tabName === 'keuangan') renderFinanceDashboard();
+        }
+
+        // Set Default Date Field to Today
+        document.getElementById('exp-date').valueAsDate = new Date();
+
+        // POS & Cart Logic
+        function populatePosCategoryFilter() {
+            const filterSelect = document.getElementById('pos-category-filter');
+            const categories = [...new Set(services.map(s => s.category))];
+            filterSelect.innerHTML = `<option value="ALL">Semua Kategori</option>`;
+            categories.forEach(cat => filterSelect.innerHTML += `<option value="${cat}">${cat}</option>`);
+            filterPosServices();
+        }
+
+        function filterPosServices() {
+            const selectedCat = document.getElementById('pos-category-filter').value;
+            const selectPos = document.getElementById('pos-service-select');
+            selectPos.innerHTML = '<option value="">-- Pilih Treatment --</option>';
+
+            services.forEach((s, idx) => {
+                if(selectedCat === 'ALL' || s.category === selectedCat) {
+                    selectPos.innerHTML += `<option value="${idx}">[${s.category}] ${s.name} - Rp ${Number(s.price).toLocaleString('id-ID')}</option>`;
+                }
+            });
+        }
+
+        function addToCart() {
+            const idx = document.getElementById('pos-service-select').value;
+            if(idx === "") return alert("Pilih treatment dahulu!");
+            cart.push(services[idx]);
+            renderCart();
+        }
+
+        function removeFromCart(idx) {
+            cart.splice(idx, 1);
+            renderCart();
+        }
+
+        function renderCart() {
+            const tbody = document.getElementById('cart-table-body');
+            tbody.innerHTML = '';
+            let total = 0;
+
+            if(cart.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="text-center py-3 text-gray-400">Belum ada treatment dipilih</td></tr>`;
+            } else {
+                cart.forEach((item, idx) => {
+                    total += item.price;
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="py-2">${item.name}</td>
+                            <td class="py-2 text-right font-bold text-pink-600">Rp ${Number(item.price).toLocaleString('id-ID')}</td>
+                            <td class="py-2 text-center"><button onclick="removeFromCart(${idx})" class="text-red-400"><i class="fas fa-trash"></i></button></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            document.getElementById('pos-subtotal').innerText = `Rp ${Number(total).toLocaleString('id-ID')}`;
+            calculatePayment();
+        }
+
+        function calculatePayment() {
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            const dp = parseFloat(document.getElementById('pos-dp-amount').value) || 0;
+            const pay = parseFloat(document.getElementById('pos-pay-amount').value) || 0;
+
+            const remaining = Math.max(0, total - dp);
+            const change = pay - remaining;
+
+            document.getElementById('pos-dp-display').innerText = `Rp ${Number(dp).toLocaleString('id-ID')}`;
+            document.getElementById('pos-remaining').innerText = `Rp ${Number(remaining).toLocaleString('id-ID')}`;
+
+            const changeEl = document.getElementById('pos-change');
+            if(change >= 0) {
+                changeEl.innerText = `Rp ${Number(change).toLocaleString('id-ID')}`;
+                changeEl.className = "text-sm font-bold text-green-600";
+            } else {
+                changeEl.innerText = `Kurang Rp ${Number(Math.abs(change)).toLocaleString('id-ID')}`;
+                changeEl.className = "text-sm font-bold text-red-500";
+            }
+        }
+
+        function processCheckout() {
+            const customer = document.getElementById('pos-customer').value.trim() || 'Klien Umum';
+            const phone = document.getElementById('pos-phone').value.trim() || '-';
+            const dateInput = document.getElementById('pos-date').value;
+            const time = document.getElementById('pos-time').value || '-';
+
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            const dp = parseFloat(document.getElementById('pos-dp-amount').value) || 0;
+
+            if(cart.length === 0) return alert("Pilih minimal 1 treatment!");
+
+            const dateObj = dateInput ? new Date(dateInput) : new Date();
+
+            const transactionRecord = {
+                id: Date.now(),
+                timestamp: new Date().toLocaleString('id-ID'),
+                rawDate: dateObj.toISOString(),
+                customer, phone,
+                bookingDate: `${dateInput || 'Hari ini'} ${time}`,
+                items: [...cart],
+                total, dp,
+                remaining: Math.max(0, total - dp)
+            };
+
+            history.unshift(transactionRecord);
+            saveData();
+            renderReport();
+            showReceipt(transactionRecord);
+
+            cart = [];
+            document.getElementById('pos-customer').value = '';
+            document.getElementById('pos-phone').value = '';
+            document.getElementById('pos-dp-amount').value = '';
+            document.getElementById('pos-pay-amount').value = '';
+            renderCart();
+        }
+
+        // Pengeluaran Logic
+        function saveExpense(e) {
+            e.preventDefault();
+            const date = document.getElementById('exp-date').value;
+            const category = document.getElementById('exp-category').value;
+            const desc = document.getElementById('exp-desc').value.trim();
+            const amount = parseFloat(document.getElementById('exp-amount').value);
+
+            expenses.unshift({
+                id: Date.now(),
+                date, category, desc, amount,
+                rawDate: new Date(date).toISOString()
+            });
+
+            saveData();
+            renderExpenses();
+            document.getElementById('exp-desc').value = '';
+            document.getElementById('exp-amount').value = '';
+        }
+
+        function deleteExpense(id) {
+            if(confirm("Hapus catatan pengeluaran ini?")) {
+                expenses = expenses.filter(e => e.id !== id);
+                saveData();
+                renderExpenses();
+            }
+        }
+
+        function renderExpenses() {
+            const tbody = document.getElementById('expense-table-body');
+            tbody.innerHTML = '';
+            if(expenses.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-400">Belum ada catatan pengeluaran</td></tr>`;
+            } else {
+                expenses.forEach(e => {
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-3 text-xs text-gray-500">${e.date}</td>
+                            <td class="p-3"><span class="text-xs bg-rose-100 text-rose-700 px-2 py-0.5 rounded font-bold">${e.category}</span></td>
+                            <td class="p-3 font-medium text-gray-800">${e.desc}</td>
+                            <td class="p-3 text-right font-bold text-rose-600">Rp ${Number(e.amount).toLocaleString('id-ID')}</td>
+                            <td class="p-3 text-center">
+                                <button onclick="deleteExpense(${e.id})" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        // Finance & Analytics Engine
+        function filterByPeriod(dataArray, periodKey) {
+            const now = new Date();
+            return dataArray.filter(item => {
+                const d = new Date(item.rawDate || item.date || item.timestamp);
+                if (isNaN(d.getTime())) return true;
+
+                if (periodKey === 'daily') {
+                    return d.toDateString() === now.toDateString();
+                } else if (periodKey === 'weekly') {
+                    const oneWeekAgo = new Date();
+                    oneWeekAgo.setDate(now.getDate() - 7);
+                    return d >= oneWeekAgo && d <= now;
+                } else if (periodKey === 'monthly') {
+                    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                } else if (periodKey === 'yearly') {
+                    return d.getFullYear() === now.getFullYear();
+                }
+                return true; // 'all'
+            });
+        }
+
+        function renderFinanceDashboard() {
+            const period = document.getElementById('finance-period').value;
+
+            const filteredHistory = filterByPeriod(history, period);
+            const filteredExpenses = filterByPeriod(expenses, period);
+
+            const totalIncome = filteredHistory.reduce((sum, h) => sum + h.total, 0);
+            const totalExpense = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
+            const netProfit = totalIncome - totalExpense;
+
+            document.getElementById('card-income').innerText = `Rp ${Number(totalIncome).toLocaleString('id-ID')}`;
+            document.getElementById('card-expense').innerText = `Rp ${Number(totalExpense).toLocaleString('id-ID')}`;
+            document.getElementById('card-profit').innerText = `Rp ${Number(netProfit).toLocaleString('id-ID')}`;
+
+            renderCharts(totalIncome, totalExpense, filteredExpenses);
+        }
+
+        function renderCharts(income, expense, filteredExpenses) {
+            // Bar Chart
+            const ctxBar = document.getElementById('barChart').getContext('2d');
+            if (barChartInstance) barChartInstance.destroy();
+
+            barChartInstance = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: ['Pemasukan', 'Pengeluaran', 'Laba Bersih'],
+                    datasets: [{
+                        label: 'Nominal (Rp)',
+                        data: [income, expense, income - expense],
+                        backgroundColor: ['#10b981', '#f43f5e', '#ec4899'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Pie Chart (Expenses Breakdown)
+            const catMap = {};
+            filteredExpenses.forEach(e => {
+                catMap[e.category] = (catMap[e.category] || 0) + e.amount;
+            });
+
+            const pieLabels = Object.keys(catMap);
+            const pieData = Object.values(catMap);
+
+            const ctxPie = document.getElementById('pieChart').getContext('2d');
+            if (pieChartInstance) pieChartInstance.destroy();
+
+            pieChartInstance = new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: pieLabels.length > 0 ? pieLabels : ['Belum Ada Data'],
+                    datasets: [{
+                        data: pieData.length > 0 ? pieData : [1],
+                        backgroundColor: pieData.length > 0 ? ['#f43f5e', '#fb923c', '#facc15', '#a855f7', '#3b82f6'] : ['#e5e7eb']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // Receipt Modal
+        function showReceipt(record) {
+            document.getElementById('rec-date-time').innerText = record.timestamp;
+            document.getElementById('rec-customer').innerText = record.customer;
+            document.getElementById('rec-phone').innerText = record.phone;
+            document.getElementById('rec-booking-date').innerText = record.bookingDate;
+
+            const itemsContainer = document.getElementById('rec-items-list');
+            itemsContainer.innerHTML = '';
+            record.items.forEach(item => {
+                itemsContainer.innerHTML += `
+                    <div class="flex justify-between">
+                        <span>${item.name}</span>
+                        <span class="font-semibold">Rp ${Number(item.price).toLocaleString('id-ID')}</span>
+                    </div>
+                `;
+            });
+
+            document.getElementById('rec-total').innerText = `Rp ${Number(record.total).toLocaleString('id-ID')}`;
+            document.getElementById('rec-dp').innerText = `Rp ${Number(record.dp).toLocaleString('id-ID')}`;
+            document.getElementById('rec-remaining').innerText = `Rp ${Number(record.remaining).toLocaleString('id-ID')}`;
+
+            document.getElementById('receipt-modal').classList.remove('hidden');
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receipt-modal').classList.add('hidden');
+        }
+
+        // Price List Functions
+        function renderPriceList() {
+            const tbody = document.getElementById('pl-table-body');
+            tbody.innerHTML = '';
+            services.forEach((s, idx) => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-pink-50/30">
+                        <td class="p-3 font-semibold text-gray-400">${idx + 1}</td>
+                        <td class="p-3"><span class="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded font-bold">${s.category}</span></td>
+                        <td class="p-3 font-bold text-gray-800">${s.name}</td>
+                        <td class="p-3 font-bold text-pink-600">Rp ${Number(s.price).toLocaleString('id-ID')}</td>
+                        <td class="p-3 text-center space-x-1">
+                            <button onclick="editService(${idx})" class="bg-amber-500 text-white px-2 py-1 rounded text-xs">Edit</button>
+                            <button onclick="deleteService(${idx})" class="bg-red-500 text-white px-2 py-1 rounded text-xs">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            populatePosCategoryFilter();
+            saveData();
+        }
+
+        function saveService(e) {
+            e.preventDefault();
+            const category = document.getElementById('pl-category').value.trim();
+            const name = document.getElementById('pl-name').value.trim();
+            const price = parseFloat(document.getElementById('pl-price').value);
+            const idx = parseInt(document.getElementById('pl-edit-index').value);
+
+            if(idx === -1) services.push({ category, name, price });
+            else services[idx] = { category, name, price };
+
+            resetPlForm();
+            renderPriceList();
+        }
+
+        function editService(idx) {
+            document.getElementById('pl-category').value = services[idx].category;
+            document.getElementById('pl-name').value = services[idx].name;
+            document.getElementById('pl-price').value = services[idx].price;
+            document.getElementById('pl-edit-index').value = idx;
+            document.getElementById('pl-btn-cancel').classList.remove('hidden');
+        }
+
+        function deleteService(idx) {
+            if(confirm("Hapus layanan ini?")) {
+                services.splice(idx, 1);
+                renderPriceList();
+            }
+        }
+
+        function resetPlForm() {
+            document.getElementById('pl-category').value = '';
+            document.getElementById('pl-name').value = '';
+            document.getElementById('pl-price').value = '';
+            document.getElementById('pl-edit-index').value = '-1';
+            document.getElementById('pl-btn-cancel').classList.add('hidden');
+        }
+
+        function restoreDefaultServices() {
+            if(confirm("Reset ke menu awal?")) {
+                services = [...defaultServices];
+                renderPriceList();
+            }
+        }
+
+        // Laporan Transaksi Struk
+        function renderReport() {
+            const tbody = document.getElementById('report-table-body');
+            tbody.innerHTML = '';
+
+            if(history.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400">Belum ada riwayat transaksi</td></tr>`;
+            } else {
+                history.forEach((h) => {
+                    const itemNames = h.items.map(i => i.name).join(', ');
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-3 text-xs">${h.bookingDate}</td>
+                            <td class="p-3 font-semibold text-gray-800">${h.customer}</td>
+                            <td class="p-3 text-xs text-gray-500">${itemNames}</td>
+                            <td class="p-3 text-right font-bold">Rp ${Number(h.total).toLocaleString('id-ID')}</td>
+                            <td class="p-3 text-right text-pink-600 font-bold">Rp ${Number(h.dp).toLocaleString('id-ID')}</td>
+                            <td class="p-3 text-center">
+                                <button onclick="reprintReceipt(${h.id})" class="bg-pink-100 text-pink-600 font-bold px-2 py-1 rounded text-xs hover:bg-pink-200">
+                                    <i class="fas fa-receipt"></i> Struk
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        function reprintReceipt(id) {
+            const record = history.find(h => h.id === id);
+            if(record) showReceipt(record);
+        }
+
+        function clearHistory() {
+            if(confirm("Hapus seluruh riwayat transaksi?")) {
+                history = [];
+                saveData();
+                renderReport();
+            }
+        }
+
+        // Init App
+        renderPriceList();
+        renderCart();
+        renderExpenses();
+        renderReport();
     </script>
 </body>
 </html>
